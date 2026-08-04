@@ -36,6 +36,7 @@ func (n *FuncNode) ToJSON(indent int) string {
 type VarDeclNode struct {
 	Name        string
 	Initializer ASTNode
+	Line        int // usado pelo Semantic Analyzer no relatório de erros
 }
 
 func (n *VarDeclNode) Print(indent int) {
@@ -59,6 +60,7 @@ func (n *VarDeclNode) ToJSON(indent int) string {
 type AssignNode struct {
 	Name string
 	Expr ASTNode
+	Line int // usado pelo Semantic Analyzer no relatório de erros
 }
 
 func (n *AssignNode) Print(indent int) {

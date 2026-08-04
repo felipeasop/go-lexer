@@ -59,6 +59,7 @@ func (n *LiteralNode) ToJSON(indent int) string {
 // ─── VariableNode ──────────────────────────────────────────────────
 type VariableNode struct {
 	Name string
+	Line int // usado pelo Semantic Analyzer no relatório de erros
 }
 
 func (n *VariableNode) Print(indent int) {

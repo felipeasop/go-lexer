@@ -318,7 +318,7 @@ func (p *Parser) parseVarDecl() ast.ASTNode {
 	}
 
 	p.match(lexer.SEMICOLON)
-	return &ast.VarDeclNode{Name: id.Lexeme, Initializer: init}
+	return &ast.VarDeclNode{Name: id.Lexeme, Initializer: init, Line: id.Line}
 }
 
 // ─── ShortDecl ─────────────────────────────────────────────────────
@@ -328,7 +328,7 @@ func (p *Parser) parseShortDecl() ast.ASTNode {
 	p.advance()       // consome ':='
 	init := p.parseExpr()
 	p.match(lexer.SEMICOLON)
-	return &ast.VarDeclNode{Name: id.Lexeme, Initializer: init}
+	return &ast.VarDeclNode{Name: id.Lexeme, Initializer: init, Line: id.Line}
 }
 
 // ─── Assignment ────────────────────────────────────────────────────
@@ -338,7 +338,7 @@ func (p *Parser) parseAssignment() ast.ASTNode {
 	p.advance()       // consome '='
 	expr := p.parseExpr()
 	p.match(lexer.SEMICOLON)
-	return &ast.AssignNode{Name: id.Lexeme, Expr: expr}
+	return &ast.AssignNode{Name: id.Lexeme, Expr: expr, Line: id.Line}
 }
 
 // ─── IncDec ────────────────────────────────────────────────────────
@@ -355,8 +355,9 @@ func (p *Parser) parseIncDec() ast.ASTNode {
 	return &ast.AssignNode{
 		Name: id.Lexeme,
 		Expr: &ast.BinaryOpNode{OpStr: opStr,
-			Left:  &ast.VariableNode{Name: id.Lexeme},
+			Left:  &ast.VariableNode{Name: id.Lexeme, Line: id.Line},
 			Right: &ast.LiteralNode{Value: "1"}},
+		Line: id.Line,
 	}
 }
 
@@ -377,7 +378,7 @@ func (p *Parser) parseFuncCall() ast.ASTNode {
 	}
 	// Não chamamos p.match(lexer.RPAREN) porque o advance() já o engoliu.
 	p.match(lexer.SEMICOLON)
-	return &ast.VariableNode{Name: id.Lexeme + "(...)"}
+	return &ast.VariableNode{Name: id.Lexeme + "(...)", Line: id.Line}
 }
 
 // ─── PrintStmt ─────────────────────────────────────────────────────
@@ -504,13 +505,13 @@ func (p *Parser) parseSimpleStmt() ast.ASTNode {
 			id := p.advance()
 			p.advance()
 			expr := p.parseExpr()
-			return &ast.VarDeclNode{Name: id.Lexeme, Initializer: expr}
+			return &ast.VarDeclNode{Name: id.Lexeme, Initializer: expr, Line: id.Line}
 		}
 		if p.lookahead(1) == lexer.ASSIGN {
 			id := p.advance()
 			p.advance()
 			expr := p.parseExpr()
-			return &ast.AssignNode{Name: id.Lexeme, Expr: expr}
+			return &ast.AssignNode{Name: id.Lexeme, Expr: expr, Line: id.Line}
 		}
 		if p.lookahead(1) == lexer.INC || p.lookahead(1) == lexer.DEC {
 			id := p.advance()
@@ -638,9 +639,9 @@ func (p *Parser) parseFactor() ast.ASTNode {
 					depth--
 				}
 			}
-			return &ast.VariableNode{Name: tok.Lexeme + "(...)"}
+			return &ast.VariableNode{Name: tok.Lexeme + "(...)", Line: tok.Line}
 		}
-		return &ast.VariableNode{Name: tok.Lexeme}
+		return &ast.VariableNode{Name: tok.Lexeme, Line: tok.Line}
 
 	case lexer.LPAREN:
 		p.advance()

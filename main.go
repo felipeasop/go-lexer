@@ -8,6 +8,7 @@ import (
 
 	"go-compiler/lexer"
 	"go-compiler/parser"
+	"go-compiler/semantic"
 )
 
 func main() {
@@ -61,5 +62,19 @@ func main() {
 
 		astJSON := ast.ToJSON(0)
 		os.WriteFile("outputs/ast.json", []byte(astJSON), 0644)
+
+		fmt.Println("\n=== INICIANDO ANÁLISE SEMÂNTICA ===")
+		analyzer := semantic.NewSemanticAnalyzer()
+		report := analyzer.Analyze(ast)
+
+		fmt.Println(report.String())
+		os.WriteFile("outputs/relatorio_semantico.txt", []byte(report.String()), 0644)
+
+		symbolsJSON := semantic.SymbolsToJSON(analyzer.Symbols(), 0)
+		os.WriteFile("outputs/tabela_simbolos.json", []byte(symbolsJSON), 0644)
+
+		if report.HasErrors() {
+			os.Exit(1)
+		}
 	}
 }
